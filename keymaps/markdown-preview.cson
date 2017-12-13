@@ -1,6 +1,3 @@
-'atom-text-editor':
-  'ctrl-shift-m': 'markdown-preview:toggle'
-
 '.platform-darwin .markdown-preview':
   'cmd-a': 'markdown-preview:select-all'
   'cmd-+': 'markdown-preview:zoom-in'

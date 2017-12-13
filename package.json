@@ -3,10 +3,10 @@
   "version": "0.159.18",
   "main": "./lib/main",
   "description": "Open a rendered version of the Markdown in the current editor with `ctrl-shift-m`.",
-  "repository": "https://github.com/atom/markdown-preview",
+  "repository": "https://github.com/via-platform/markdown-preview",
   "license": "MIT",
   "engines": {
-    "atom": "*"
+    "via": "*"
   },
   "dependencies": {
     "dompurify": "^1.0.2",
@@ -42,18 +42,6 @@
       "type": "boolean",
       "default": false,
       "description": "Allow HTML attributes to use protocols normally considered unsafe such as `file://` and absolute paths on Windows."
-    },
-    "grammars": {
-      "type": "array",
-      "default": [
-        "source.gfm",
-        "source.litcoffee",
-        "text.html.basic",
-        "text.md",
-        "text.plain",
-        "text.plain.null-grammar"
-      ],
-      "description": "List of scopes for languages for which previewing is enabled. See [this README](https://github.com/atom/spell-check#spell-check-package-) for more information on finding the correct scope for a specific language."
     },
     "useGitHubStyle": {
       "title": "Use GitHub.com style",

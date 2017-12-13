@@ -1,6 +1,6 @@
 path = require 'path'
 
-{Emitter, Disposable, CompositeDisposable, File} = require 'atom'
+{Emitter, Disposable, CompositeDisposable, File} = require 'via'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 
@@ -21,10 +21,10 @@ class MarkdownPreviewView
     @registerScrollCommands()
     if @editorId?
       @resolveEditor(@editorId)
-    else if atom.packages.hasActivatedInitialPackages()
+    else if via.packages.hasActivatedInitialPackages()
       @subscribeToFilePath(@filePath)
     else
-      @disposables.add atom.packages.onDidActivateInitialPackages =>
+      @disposables.add via.packages.onDidActivateInitialPackages =>
         @subscribeToFilePath(@filePath)
 
   serialize: ->
@@ -40,7 +40,7 @@ class MarkdownPreviewView
     @element.remove()
 
   registerScrollCommands: ->
-    @disposables.add(atom.commands.add(@element, {
+    @disposables.add(via.commands.add(@element, {
       'core:move-up': =>
         @element.scrollTop -= document.body.offsetHeight / 20
         return
@@ -91,26 +91,26 @@ class MarkdownPreviewView
       else
         @subscribeToFilePath(@filePath)
 
-    if atom.packages.hasActivatedInitialPackages()
+    if via.packages.hasActivatedInitialPackages()
       resolve()
     else
-      @disposables.add atom.packages.onDidActivateInitialPackages(resolve)
+      @disposables.add via.packages.onDidActivateInitialPackages(resolve)
 
   editorForId: (editorId) ->
-    for editor in atom.workspace.getTextEditors()
+    for editor in via.workspace.getTextEditors()
       return editor if editor.id?.toString() is editorId.toString()
     null
 
   handleEvents: ->
     lazyRenderMarkdown = _.debounce((=> @renderMarkdown()), 250)
-    @disposables.add atom.grammars.onDidAddGrammar -> lazyRenderMarkdown()
-    if typeof atom.grammars.onDidRemoveGrammar is 'function'
-      @disposables.add atom.grammars.onDidRemoveGrammar -> lazyRenderMarkdown()
+    @disposables.add via.grammars.onDidAddGrammar -> lazyRenderMarkdown()
+    if typeof via.grammars.onDidRemoveGrammar is 'function'
+      @disposables.add via.grammars.onDidRemoveGrammar -> lazyRenderMarkdown()
     else
       # TODO: Remove onDidUpdateGrammar hook once onDidRemoveGrammar is released
-      @disposables.add atom.grammars.onDidUpdateGrammar -> lazyRenderMarkdown()
+      @disposables.add via.grammars.onDidUpdateGrammar -> lazyRenderMarkdown()
 
-    atom.commands.add @element,
+    via.commands.add @element,
       'core:save-as': (event) =>
         event.stopPropagation()
         @saveAs()
@@ -129,32 +129,32 @@ class MarkdownPreviewView
         @element.style.zoom = 1
       'markdown-preview:toggle-break-on-single-newline': ->
         keyPath = 'markdown-preview.breakOnSingleNewline'
-        atom.config.set(keyPath, not atom.config.get(keyPath))
+        via.config.set(keyPath, not via.config.get(keyPath))
       'markdown-preview:toggle-github-style': ->
         keyPath = 'markdown-preview.useGitHubStyle'
-        atom.config.set(keyPath, not atom.config.get(keyPath))
+        via.config.set(keyPath, not via.config.get(keyPath))
 
     changeHandler = =>
       @renderMarkdown()
 
-      pane = atom.workspace.paneForItem(this)
-      if pane? and pane isnt atom.workspace.getActivePane()
+      pane = via.workspace.paneForItem(this)
+      if pane? and pane isnt via.workspace.getActivePane()
         pane.activateItem(this)
 
     if @file?
       @disposables.add @file.onDidChange(changeHandler)
     else if @editor?
       @disposables.add @editor.getBuffer().onDidStopChanging ->
-        changeHandler() if atom.config.get 'markdown-preview.liveUpdate'
+        changeHandler() if via.config.get 'markdown-preview.liveUpdate'
       @disposables.add @editor.onDidChangePath => @emitter.emit 'did-change-title'
       @disposables.add @editor.getBuffer().onDidSave ->
-        changeHandler() unless atom.config.get 'markdown-preview.liveUpdate'
+        changeHandler() unless via.config.get 'markdown-preview.liveUpdate'
       @disposables.add @editor.getBuffer().onDidReload ->
-        changeHandler() unless atom.config.get 'markdown-preview.liveUpdate'
+        changeHandler() unless via.config.get 'markdown-preview.liveUpdate'
 
-    @disposables.add atom.config.onDidChange 'markdown-preview.breakOnSingleNewline', changeHandler
+    @disposables.add via.config.onDidChange 'markdown-preview.breakOnSingleNewline', changeHandler
 
-    @disposables.add atom.config.observe 'markdown-preview.useGitHubStyle', (useGitHubStyle) =>
+    @disposables.add via.config.observe 'markdown-preview.useGitHubStyle', (useGitHubStyle) =>
       if useGitHubStyle
         @element.setAttribute('data-use-github-style', '')
       else
@@ -237,9 +237,9 @@ class MarkdownPreviewView
     document.styleSheets
 
   getTextEditorStyles: ->
-    textEditorStyles = document.createElement("atom-styles")
-    textEditorStyles.initialize(atom.styles)
-    textEditorStyles.setAttribute "context", "atom-text-editor"
+    textEditorStyles = document.createElement("via-styles")
+    textEditorStyles.initialize(via.styles)
+    textEditorStyles.setAttribute "context", "via-text-editor"
     document.body.appendChild textEditorStyles
 
     # Extract style elements content
@@ -249,7 +249,7 @@ class MarkdownPreviewView
   getMarkdownPreviewCSS: ->
     markdownPreviewRules = []
     ruleRegExp = /\.markdown-preview/
-    cssUrlRegExp = /url\(atom:\/\/markdown-preview\/assets\/(.*)\)/
+    cssUrlRegExp = /url\(via:\/\/markdown-preview\/assets\/(.*)\)/
 
     for stylesheet in @getDocumentStyleSheets()
       if stylesheet.rules?
@@ -260,7 +260,7 @@ class MarkdownPreviewView
     markdownPreviewRules
       .concat(@getTextEditorStyles())
       .join('\n')
-      .replace(/atom-text-editor/g, 'pre.editor-colors')
+      .replace(/via-text-editor/g, 'pre.editor-colors')
       .replace(/:host/g, '.host') # Remove shadow-dom :host selector causing problem on FF
       .replace cssUrlRegExp, (match, assetsName, offset, string) -> # base64 encode assets
         assetPath = path.join __dirname, '../assets', assetsName
@@ -304,13 +304,13 @@ class MarkdownPreviewView
 
     # Use default copy event handler if there is selected text inside this view
     if selectedText and selectedNode? and (@element is selectedNode or @element.contains(selectedNode))
-      atom.clipboard.write(selectedText)
+      via.clipboard.write(selectedText)
     else
       @getHTML (error, html) ->
         if error?
-          atom.notifications.addError('Copying Markdown as HTML failed', {dismissable: true, detail: error.message})
+          via.notifications.addError('Copying Markdown as HTML failed', {dismissable: true, detail: error.message})
         else
-          atom.clipboard.write(html)
+          via.clipboard.write(html)
 
   saveAs: ->
     return if @loading
@@ -322,14 +322,14 @@ class MarkdownPreviewView
       filePath += '.html'
     else
       filePath = 'untitled.md.html'
-      if projectPath = atom.project.getPaths()[0]
+      if projectPath = via.project.getPaths()[0]
         filePath = path.join(projectPath, filePath)
 
-    if htmlFilePath = atom.showSaveDialogSync(filePath)
+    if htmlFilePath = via.showSaveDialogSync(filePath)
 
       @getHTML (error, htmlBody) =>
         if error?
-          atom.notifications.addError('Saving Markdown as HTML failed', {dismissable: true, detail: error.message})
+          via.notifications.addError('Saving Markdown as HTML failed', {dismissable: true, detail: error.message})
         else
           html = """
             <!DOCTYPE html>
@@ -343,4 +343,4 @@ class MarkdownPreviewView
             </html>""" + "\n" # Ensure trailing newline
 
           fs.writeFileSync(htmlFilePath, html)
-          atom.workspace.open(htmlFilePath)
+          via.workspace.open(htmlFilePath)

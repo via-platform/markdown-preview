@@ -13,7 +13,6 @@ menu: [
 'context-menu':
   '.markdown-preview': [
     {label: 'Select All', command: 'markdown-preview:select-all'}
-    {label: 'Save As HTML\u2026', command: 'core:save-as'}
   ]
   '.markdown-preview.has-selection': [
     {label: 'Copy', command: 'core:copy'}
@@ -21,17 +20,3 @@ menu: [
   '.markdown-preview:not(.has-selection)': [
     {label: 'Copy As HTML', command: 'core:copy'}
   ]
-  '.tree-view .file .name[data-name$=\\.markdown]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
-  '.tree-view .file .name[data-name$=\\.md]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
-  '.tree-view .file .name[data-name$=\\.mdown]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
-  '.tree-view .file .name[data-name$=\\.mkd]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
-  '.tree-view .file .name[data-name$=\\.mkdown]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
-  '.tree-view .file .name[data-name$=\\.ron]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
-  '.tree-view .file .name[data-name$=\\.txt]':
-    [{label: 'Markdown Preview', command: 'markdown-preview:preview-file'}]
