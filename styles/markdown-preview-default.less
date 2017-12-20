@@ -5,14 +5,15 @@
 // They use the syntax-variables to adapt to the color scheme of syntax themes.
 
 
-@import "syntax-variables";
+@import "variables";
+@import "ui-variables";
 
 .markdown-preview:not([data-use-github-style]) {
 
-  @fg: @syntax-text-color;
-  @bg: @syntax-background-color;
+  @fg: @text-color;
+  @bg: @pane-background-color;
 
-  @fg-accent: @syntax-cursor-color;
+  @fg-accent: @primary-color;
   @fg-strong: contrast(@bg, darken(@fg, 32%), lighten(@fg, 32%));
   @fg-subtle: contrast(@fg, lighten(@fg, 16%), darken(@fg, 16%));
 
@@ -132,7 +133,7 @@
 
   code {
     color: @fg-strong;
-    background-color: contrast(@syntax-background-color, lighten(@syntax-background-color, 8%), darken(@syntax-background-color, 6%));
+    background-color: contrast(@pane-background-color, lighten(@pane-background-color, 8%), darken(@pane-background-color, 6%));
   }
 
 
@@ -142,7 +143,7 @@
     color: @fg-strong;
     border: 1px solid @border;
     border-bottom: 2px solid darken(@border, 6%);
-    background-color: contrast(@syntax-background-color, lighten(@syntax-background-color, 8%), darken(@syntax-background-color, 6%));
+    background-color: contrast(@pane-background-color, lighten(@pane-background-color, 8%), darken(@pane-background-color, 6%));
   }
 
 }
